@@ -108,7 +108,7 @@ def compute_weights(clf, X_test, X_repulse=None):
     return weights, entropy, repulsion
 
 
-def compute_best_temperature(weights, t_candidate=np.logspace(-4, 1, 11), percentage_to_consider=0.1, target_proba_sum=0.9):
+def compute_best_temperature(weights, t_candidate=np.logspace(-5, 1, 100), percentage_to_consider=0.1, target_proba_sum=0.9):
 
     errors = []
     for t in t_candidate:
@@ -116,9 +116,9 @@ def compute_best_temperature(weights, t_candidate=np.logspace(-4, 1, 11), percen
         if np.any(np.isnan(p)):
             error = np.inf
         else:
-            sorted_weights = np.sort(weights)
-            n_above_mean = np.mean(p > np.mean(p))
-            proba_accumulated =
+            sorted_p = np.sort(p)
+            n_ratio = int(percentage_to_consider * len(p))
+            proba_accumulated = np.sum(sorted_p[-n_ratio:])
             error = np.abs(proba_accumulated - target_proba_sum)
         errors.append(error)
     return t_candidate[np.argmin(errors)]
@@ -151,11 +151,11 @@ if __name__ == '__main__':
 
     iris = datasets.load_iris()
     X = np.random.rand(50, 2)
-    y = line(X)
+    y = circle(X)
     clf = train_classifier(X, y)
 
     N_SAMPLING = 1000
-    N_SELECTED = 5
+    N_SELECTED = 20
 
     X_sampled = []
     for i in range(N_SELECTED):
