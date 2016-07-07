@@ -111,7 +111,7 @@ def compute_weights(X_test, X_proba, X_repulse=None):
     return weights, entropy, repulsion
 
 
-def compute_best_temperature(weights, t_candidate=np.logspace(-5, 1, 100), percentage_to_consider=0.1, target_proba_sum=0.99):
+def compute_best_temperature(weights, t_candidate=np.logspace(-5, 1, 100), percentage_to_consider=0.05, target_proba_sum=0.95):
 
     errors = []
     for t in t_candidate:
