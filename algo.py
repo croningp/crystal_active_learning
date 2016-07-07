@@ -71,8 +71,8 @@ def probabilistic_choice(proba_distribution):
 
 def train_classifier(X, y):
     param_grid = {
-        'C': np.logspace(-3, 2, 11),
-        'gamma': np.logspace(-3, 2, 11),
+        'C': np.logspace(-5, 5, 21),
+        'gamma': np.logspace(-5, 5, 21),
         'kernel': ['rbf'],
         'probability': [True]
     }
