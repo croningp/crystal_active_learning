@@ -23,13 +23,7 @@ from utils.plot_helpers import plot_full_xp_in_folder
 from utils.class_function import in_circle
 from utils.class_function import below_sinus_2D
 
-
-def is_start_y_valid(X, class_func, min_sample_per_class=2):
-    y = class_func(X)
-    for class_number in np.unique(y):
-        if np.sum(y == class_number) < min_sample_per_class:
-            return False
-    return True
+from utils.classifier import generate_random_X
 
 
 if __name__ == '__main__':
@@ -44,16 +38,16 @@ if __name__ == '__main__':
     problems['circle'] = lambda X: in_circle(X, [0.75, 0.5], 0.25)
     problems['sinus'] = lambda X: below_sinus_2D(X, 0.25, 10, 0.5)
 
-    n_run = 100
+    n_run = 50
     for problem_name, class_func in problems.items():
         for i in range(n_run):
+
+            print '{}: {}/{}'.format(problem_name, i + 1, n_run)
 
             base_save_folder = os.path.join(HERE_PATH, 'plot', problem_name)
 
             np.random.seed(i)
-            X = np.random.rand(N_START, 2)
-            while not is_start_y_valid(X, class_func):
-                X = np.random.rand(N_START, 2)
+            X = generate_random_X(N_START, class_func)
 
             X_test = np.random.rand(N_TEST, 2)
 

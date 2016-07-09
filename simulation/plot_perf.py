@@ -63,5 +63,6 @@ if __name__ == '__main__':
             if method_name == 'uncertainty_single':
                 data = data[:, 0:-1:10]
 
-            sns.tsplot(data, ci=[68, 95], color="m")
+            sns.tsplot(data)
+        plt.legend(method_names)
         figures.append(fig)
