@@ -73,3 +73,8 @@ def evaluate_xp(all_info, X, class_func):
 def save_eval(filename, xp_eval):
     with open(filename, 'w') as f:
         json.dump(xp_eval, f)
+
+
+def read_eval(filename):
+    with open(filename) as f:
+        return json.load(f)

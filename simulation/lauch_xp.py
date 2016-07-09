@@ -41,8 +41,8 @@ if __name__ == '__main__':
     N_TEST = 1000
 
     problems = {}
-    problems['sinus'] = lambda X: in_circle(X, [0.75, 0.5], 0.25)
-    problems['circle'] = lambda X: below_sinus_2D(X, 0.25, 10, 0.5)
+    problems['circle'] = lambda X: in_circle(X, [0.75, 0.5], 0.25)
+    problems['sinus'] = lambda X: below_sinus_2D(X, 0.25, 10, 0.5)
 
     n_run = 100
     for problem_name, class_func in problems.items():
@@ -65,7 +65,7 @@ if __name__ == '__main__':
             plot_full_xp_in_folder(save_folder, class_func, uncertainty_all_info, exts=['.png'])
 
             uncertainty_xp_eval = evaluate_xp(uncertainty_all_info, X_test, class_func)
-            save_eval(uncertainty_xp_eval, eval_savefilename)
+            save_eval(eval_savefilename, uncertainty_xp_eval)
 
             # random
             save_folder = os.path.join(base_save_folder, 'uncertainty_single', str(i))
@@ -76,7 +76,7 @@ if __name__ == '__main__':
             plot_full_xp_in_folder(save_folder, class_func, uncertainty_single_all_info, exts=['.png'])
 
             uncertainty_single_xp_eval = evaluate_xp(uncertainty_single_all_info, X_test, class_func)
-            save_eval(uncertainty_single_xp_eval, eval_savefilename)
+            save_eval(eval_savefilename, uncertainty_single_xp_eval)
 
             # random
             save_folder = os.path.join(base_save_folder, 'random', str(i))
@@ -86,4 +86,4 @@ if __name__ == '__main__':
             plot_full_xp_in_folder(save_folder, class_func, all_random_info, exts=['.png'])
 
             random_xp_eval = evaluate_xp(all_random_info, X_test, class_func)
-            save_eval(random_xp_eval, eval_savefilename)
+            save_eval(eval_savefilename, random_xp_eval)
