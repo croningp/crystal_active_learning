@@ -11,13 +11,20 @@ sys.path.append(root_path)
 
 import numpy as np
 
-import matplotlib as mpl
+import matplotlib
 import matplotlib.pyplot as plt
 import seaborn as sns
 
 import filetools
 
 from utils.experiment import read_eval
+from utils.plot_helpers import save_and_close_figure
+
+# design figure
+fontsize = 22
+matplotlib.rc('xtick', labelsize=20)
+matplotlib.rc('ytick', labelsize=20)
+matplotlib.rcParams.update({'font.size': fontsize})
 
 
 if __name__ == '__main__':
@@ -52,17 +59,37 @@ if __name__ == '__main__':
 
             results[problem_name][method_name] = result
 
+    #
     figures = []
+    axs = []
+    colors = ['b', 'g', 'r']
     for problem_name in problem_names:
-        fig = plt.figure()
-        for method_name in method_names:
+        fig = plt.figure(figsize=(12, 8))
+        all_data = []
+        for i, method_name in enumerate(method_names):
 
             data = results[problem_name][method_name]['accuracy_score']
             data = np.array(data)
-
             if method_name == 'uncertainty_single':
                 data = data[:, 0:-1:10]
 
-            sns.tsplot(data)
-        plt.legend(method_names)
+            all_data.append(data[0:30, :])
+
+        all_data = np.array(all_data)
+        all_data = np.swapaxes(all_data, 0, 1)
+        all_data = np.swapaxes(all_data, 1, 2)
+        ax = sns.tsplot(all_data, time=range(1, 11), condition=method_names, ci=[68, 95])
+        ax.plot([1, 10], [1, 1], color='grey', linestyle='--')
+        ax.set_xlabel('Iterations', fontsize=fontsize)
+        ax.set_ylabel('Prediction Accuracy', fontsize=fontsize)
+        ylim = ax.get_ylim()
+        ax.set_ylim([ylim[0], 1 + 0.05 * np.diff(ylim)])
+        ax.legend(bbox_to_anchor=(1, 0.25), fontsize=fontsize)
         figures.append(fig)
+        break
+
+    #
+    for i, fig in enumerate(figures):
+        foldername = os.path.join(HERE_PATH, 'plot', problem_names[i])
+        filename = os.path.join(foldername, 'accuracy')
+        save_and_close_figure(fig, filename, exts=['.png'])
