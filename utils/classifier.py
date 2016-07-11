@@ -31,9 +31,9 @@ def classification_accuracy(X, class_func, clf):
     return accuracy_score(y_true, y_pred)
 
 
-def generate_random_X(n_samples, class_func, n_dim=2, min_sample_per_class=5):
+def generate_random_X(n_samples, class_func, n_dim=2, n_class=2, min_sample_per_class=5):
     X = np.random.rand(n_samples, n_dim)
-    while not is_start_y_valid(X, class_func, min_sample_per_class):
+    while not is_start_y_valid(X, class_func, n_class, min_sample_per_class):
         X = np.random.rand(n_samples, n_dim)
     return X
 
@@ -47,6 +47,9 @@ def get_min_sample_per_class(y):
     return min_sample_per_class
 
 
-def is_start_y_valid(X, class_func, min_sample_per_class=2):
+def is_start_y_valid(X, class_func, n_class=2, min_sample_per_class=2):
     y = class_func(X)
-    return get_min_sample_per_class(y) >= min_sample_per_class
+    if len(np.unique(y)) == n_class:
+        return get_min_sample_per_class(y) >= min_sample_per_class
+    else:
+        return False

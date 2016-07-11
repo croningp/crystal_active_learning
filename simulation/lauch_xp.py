@@ -53,31 +53,34 @@ if __name__ == '__main__':
 
             # uncertainty
             save_folder = os.path.join(base_save_folder, 'uncertainty', str(i))
-            eval_savefilename = os.path.join(save_folder, 'xp_eval.json')
+            if not os.path.exists(save_folder):
+                eval_savefilename = os.path.join(save_folder, 'xp_eval.json')
 
-            uncertainty_all_info = run_full_xp(N_ITERATION, N_SELECTED, N_SAMPLING, class_func, X)
-            plot_full_xp_in_folder(save_folder, class_func, uncertainty_all_info, exts=['.png'])
+                uncertainty_all_info = run_full_xp(N_ITERATION, N_SELECTED, N_SAMPLING, class_func, X)
+                plot_full_xp_in_folder(save_folder, class_func, uncertainty_all_info, exts=['.png'])
 
-            uncertainty_xp_eval = evaluate_xp(uncertainty_all_info, X_test, class_func)
-            save_eval(eval_savefilename, uncertainty_xp_eval)
+                uncertainty_xp_eval = evaluate_xp(uncertainty_all_info, X_test, class_func)
+                save_eval(eval_savefilename, uncertainty_xp_eval)
 
             # random
             save_folder = os.path.join(base_save_folder, 'uncertainty_single', str(i))
-            eval_savefilename = os.path.join(save_folder, 'xp_eval.json')
+            if not os.path.exists(save_folder):
+                eval_savefilename = os.path.join(save_folder, 'xp_eval.json')
 
-            single_n_iteration = N_ITERATION * N_SELECTED
-            uncertainty_single_all_info = run_full_xp(single_n_iteration, 1, N_SAMPLING, class_func, X)
-            plot_full_xp_in_folder(save_folder, class_func, uncertainty_single_all_info, exts=['.png'])
+                single_n_iteration = N_ITERATION * N_SELECTED
+                uncertainty_single_all_info = run_full_xp(single_n_iteration, 1, N_SAMPLING, class_func, X)
+                plot_full_xp_in_folder(save_folder, class_func, uncertainty_single_all_info, exts=['.png'])
 
-            uncertainty_single_xp_eval = evaluate_xp(uncertainty_single_all_info, X_test, class_func)
-            save_eval(eval_savefilename, uncertainty_single_xp_eval)
+                uncertainty_single_xp_eval = evaluate_xp(uncertainty_single_all_info, X_test, class_func)
+                save_eval(eval_savefilename, uncertainty_single_xp_eval)
 
             # random
             save_folder = os.path.join(base_save_folder, 'random', str(i))
-            eval_savefilename = os.path.join(save_folder, 'xp_eval.json')
+            if not os.path.exists(save_folder):
+                eval_savefilename = os.path.join(save_folder, 'xp_eval.json')
 
-            all_random_info = run_random_xp(N_ITERATION, N_SELECTED, N_SAMPLING, class_func, X)
-            plot_full_xp_in_folder(save_folder, class_func, all_random_info, exts=['.png'])
+                all_random_info = run_random_xp(N_ITERATION, N_SELECTED, N_SAMPLING, class_func, X)
+                plot_full_xp_in_folder(save_folder, class_func, all_random_info, exts=['.png'])
 
-            random_xp_eval = evaluate_xp(all_random_info, X_test, class_func)
-            save_eval(eval_savefilename, random_xp_eval)
+                random_xp_eval = evaluate_xp(all_random_info, X_test, class_func)
+                save_eval(eval_savefilename, random_xp_eval)
