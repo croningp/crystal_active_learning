@@ -73,7 +73,7 @@ if __name__ == '__main__':
             if method_name == 'uncertainty_single':
                 data = data[:, 0:-1:10]
 
-            all_data.append(data[0:30, :])
+            all_data.append(data)
 
         all_data = np.array(all_data)
         all_data = np.swapaxes(all_data, 0, 1)
@@ -86,7 +86,6 @@ if __name__ == '__main__':
         ax.set_ylim([ylim[0], 1 + 0.05 * np.diff(ylim)])
         ax.legend(bbox_to_anchor=(1, 0.25), fontsize=fontsize)
         figures.append(fig)
-        break
 
     #
     for i, fig in enumerate(figures):

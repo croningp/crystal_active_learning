@@ -49,7 +49,6 @@ if __name__ == '__main__':
 
                     fname = 'video.avi'
                     video_filename = os.path.join(source_folder, fname)
-                    # if not os.path.exists(video_filename):
 
                     if 'model' in source_folder:
                         fps = 1
