@@ -6,7 +6,7 @@ HERE_PATH = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe
 
 # adding parent directory to path, so we can access the utils easily
 import sys
-root_path = os.path.join(HERE_PATH, '..')
+root_path = os.path.join(HERE_PATH, '..', '..')
 sys.path.append(root_path)
 
 import json
@@ -35,7 +35,7 @@ def proba_normalize(x):
 def proba_normalize_row(x):
     # not optimized at all
     x = np.array(x, dtype=float)
-    for i in range(X.shape[0]):
+    for i in range(x.shape[0]):
         x[i, :] = proba_normalize(x[i, :])
     return x
 
@@ -85,6 +85,7 @@ def save_json(filename, data):
 N_SELECTED = 10
 N_SAMPLING = 10000
 TOTAL_VOLUME_IN_ML = 15.0
+N_DECIMAL_EQUAL = 2
 
 if __name__ == '__main__':
 
@@ -109,11 +110,15 @@ if __name__ == '__main__':
     # load data
     current_datafile = os.path.join(last_folder, 'data.csv')
     X, y = read_data(current_datafile)
+    # check everything is fine
+    np.testing.assert_array_almost_equal(np.sum(X, axis=1), TOTAL_VOLUME_IN_ML, decimal=N_DECIMAL_EQUAL)
+
+    #
     X = proba_normalize_row(X)
 
     #
     clf = train_classifier(X, y)
-    X_selected, run_info = generate_next_samples(N_SELECTED, clf, X.shape[1], N_SAMPLING)
+    X_selected, all_run_info = generate_next_samples(N_SELECTED, clf, X.shape[1], N_SAMPLING)
 
     # save new csv
     next_folder_number = filetools.generate_n_digit_name(last_folder_int + 1)
@@ -132,5 +137,9 @@ if __name__ == '__main__':
     X_out = np.vstack((X, X_selected))
     X_out = TOTAL_VOLUME_IN_ML * X_out
 
+    # check everything is fine
+    np.testing.assert_array_almost_equal(np.sum(X_out, axis=1), TOTAL_VOLUME_IN_ML, decimal=N_DECIMAL_EQUAL)
+
+    # save
     next_datafile = os.path.join(next_folder, 'data.csv')
     write_data(next_datafile, X_out, y)
