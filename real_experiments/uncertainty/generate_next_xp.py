@@ -90,22 +90,24 @@ N_DECIMAL_EQUAL = 2
 if __name__ == '__main__':
 
     import sys
+    import filetools
+
 
     if len(sys.argv) != 2:
         print 'Please specify a root folder as argument'
 
-    root_folder = os.path.join(HERE_PATH, sys.argv[1])
+    # seed
+    seed = int(sys.argv[1])
+    random.seed(seed)
+    np.random.seed(seed)
 
-    import filetools
+    #
+    root_folder = os.path.join(HERE_PATH, sys.argv[1])
 
     folders = filetools.list_folders(root_folder)
     folders.sort()
     last_folder = folders[-1]
     last_folder_int = int(os.path.basename(last_folder))
-
-    # seed
-    random.seed(last_folder_int)
-    np.random.seed(last_folder_int)
 
     # load data
     current_datafile = os.path.join(last_folder, 'data.csv')
