@@ -62,5 +62,5 @@ if __name__ == '__main__':
     plt.xlabel('Number of experiments', fontsize=fontsize)
     plt.ylabel('Prediction accuracy', fontsize=fontsize)
 
-    plot_filename = os.path.join(HERE_PATH, 'uncertainty')
+    plot_filename = os.path.join(HERE_PATH, 'plot', 'uncertainty')
     save_and_close_figure(fig, plot_filename, exts=['.png'])

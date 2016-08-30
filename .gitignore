@@ -1,3 +1,4 @@
 *.pyc
 data
 simulation/plot
+analysis/plot
