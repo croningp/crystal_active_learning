@@ -79,7 +79,7 @@ if __name__ == '__main__':
     fig = plt.figure(figsize=(12, 8))
     plt.plot(test_range, r_scores)
     plt.plot(test_range, u_scores)
-    plt.legend(['Random', 'Uncertainty'], fontsize=fontsize)
+    plt.legend(['Random', 'Uncertainty'], fontsize=fontsize, loc=4)
     plt.xlim([0, 100])
     plt.ylim([0.5, 1])
     plt.xlabel('Number of experiments', fontsize=fontsize)
