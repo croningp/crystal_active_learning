@@ -66,20 +66,27 @@ if __name__ == '__main__':
 
     uncertainty_filename = os.path.join(root_path, 'real_experiments', 'uncertainty', '0', '0010', 'data.csv')
 
+    human_filename = os.path.join(root_path, 'real_experiments', 'human', '0', 'data.csv')
+
+
     X_test, y_test = read_data(random_filename)
     X, y = get_new_data(uncertainty_filename)
+    X_test = np.vstack((X_test, X))
+    y_test = np.hstack((y_test, y))
+    X, y = get_new_data(human_filename)
     X_test = np.vstack((X_test, X))
     y_test = np.hstack((y_test, y))
 
     test_range, r_scores = compute_learning_curve(random_filename, (X_test, y_test))
     test_range, u_scores = compute_learning_curve(uncertainty_filename, (X_test, y_test))
-
+    test_range, h_scores = compute_learning_curve(human_filename, (X_test, y_test))
 
 
     fig = plt.figure(figsize=(12, 8))
     plt.plot(test_range, r_scores)
     plt.plot(test_range, u_scores)
-    plt.legend(['Random', 'Uncertainty'], fontsize=fontsize, loc=4)
+    plt.plot(test_range, h_scores)
+    plt.legend(['Random', 'Uncertainty', 'Human'], fontsize=fontsize, loc=4)
     plt.xlim([0, 100])
     plt.ylim([0.5, 1])
     plt.xlabel('Number of experiments', fontsize=fontsize)
