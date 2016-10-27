@@ -2,3 +2,4 @@
 data
 simulation/plot
 analysis/learning_curves/plot
+analysis/explored_volume/plot
