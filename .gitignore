@@ -1,4 +1,4 @@
 *.pyc
 data
 simulation/plot
-analysis/plot
+analysis/learning_curves/plot
