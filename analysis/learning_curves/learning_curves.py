@@ -191,3 +191,18 @@ if __name__ == '__main__':
 
             plot_filename = os.path.join(HERE_PATH, 'plot', 'learning_curve_{}_{}'.format(method_name, class_name))
             save_and_close_figure(fig, plot_filename, exts=['.png'])
+
+        ##
+        fig = plt.figure(figsize=(12, 8))
+        plt.plot(test_range, np.mean(r_class_acc, 0))
+        plt.plot(test_range, np.mean(u_class_acc, 0))
+        plt.plot(test_range, np.mean(h_class_acc, 0))
+        plt.title(method_name, fontsize=fontsize)
+        plt.legend(['Random', 'Uncertainty', 'Human'], fontsize=fontsize, loc=4)
+        plt.xlim([0, 100])
+        plt.ylim([0.5, 1])
+        plt.xlabel('Number of experiments', fontsize=fontsize)
+        plt.ylabel('Prediction accuracy unbiased', fontsize=fontsize)
+
+        plot_filename = os.path.join(HERE_PATH, 'plot', 'learning_curve_{}_unbiased'.format(method_name))
+        save_and_close_figure(fig, plot_filename, exts=['.png'])
