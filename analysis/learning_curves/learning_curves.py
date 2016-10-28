@@ -19,6 +19,7 @@ import multiprocessing
 
 from sklearn import grid_search
 from sklearn.metrics import accuracy_score
+from sklearn.metrics import confusion_matrix
 
 from utils.csv_helpers import read_data
 from utils.plot_helpers import save_and_close_figure
@@ -64,6 +65,7 @@ def compute_learning_curve(filename, (X_test, y_test), method, test_range=range(
     X, y = read_data(filename)
 
     scores = []
+    confusions = []
     for t in test_range:
         ind = N_INIT_POINTS - 1 + t
 
@@ -71,23 +73,37 @@ def compute_learning_curve(filename, (X_test, y_test), method, test_range=range(
         y_train = y[0:ind]
 
         clf = train_classifier_method(X_train, y_train, method)
+
         prediction_accuracy = clf.score(X_test, y_test)
         scores.append(prediction_accuracy)
 
-    return test_range, scores
+        y_pred = clf.predict(X_test)
+        confusions.append(confusion_matrix(y_test, y_pred))
+
+    return test_range, scores, confusions
+
+
+def confusion_to_class_accuracy(confusion_matrix):
+    class_accuracy = []
+    for iclass in range(confusion_matrix.shape[0]):
+        pred = confusion_matrix[iclass, iclass] / float(np.sum(confusion_matrix[iclass, :]))
+        class_accuracy.append(pred)
+    return class_accuracy
+
+def class_accuracy_through_time(confusions):
+    class_accuracies = []
+    for iclass in range(confusions[0].shape[0]):
+        class_accuracies.append([])
+
+    for confusion in confusions:
+        class_accuracy = confusion_to_class_accuracy(confusion)
+        for iclass, acc in enumerate(class_accuracy):
+            class_accuracies[iclass].append(acc)
+
+    return class_accuracies
 
 
 CLF_METHODS = {}
-
-from sklearn.svm import SVC
-CLF_METHODS['SVM'] = {}
-CLF_METHODS['SVM']['blank_clf'] = SVC()
-CLF_METHODS['SVM']['param_grid'] = {
-    'C': np.logspace(-5, 5, 21),
-    'gamma': np.logspace(-5, 5, 21),
-    'kernel': ['rbf'],
-    'probability': [True]
-}
 
 from sklearn.neighbors import KNeighborsClassifier
 CLF_METHODS['KNN'] = {}
@@ -102,6 +118,16 @@ CLF_METHODS['RandomForest'] = {}
 CLF_METHODS['RandomForest']['blank_clf'] = RandomForestClassifier()
 CLF_METHODS['RandomForest']['param_grid'] = {
     'n_estimators': [10, 20, 30, 50, 100, 200, 500]
+}
+
+from sklearn.svm import SVC
+CLF_METHODS['SVM'] = {}
+CLF_METHODS['SVM']['blank_clf'] = SVC()
+CLF_METHODS['SVM']['param_grid'] = {
+    'C': np.logspace(-5, 5, 21),
+    'gamma': np.logspace(-5, 5, 21),
+    'kernel': ['rbf'],
+    'probability': [True]
 }
 
 
@@ -125,15 +151,16 @@ if __name__ == '__main__':
 
     for method_name, method in CLF_METHODS.items():
 
-        test_range, r_scores = compute_learning_curve(random_filename, (X_test, y_test), method)
-        test_range, u_scores = compute_learning_curve(uncertainty_filename, (X_test, y_test), method)
-        test_range, h_scores = compute_learning_curve(human_filename, (X_test, y_test), method)
+        test_range, r_scores, r_confusions = compute_learning_curve(random_filename, (X_test, y_test), method)
+        test_range, u_scores, u_confusions = compute_learning_curve(uncertainty_filename, (X_test, y_test), method)
+        test_range, h_scores, h_confusions = compute_learning_curve(human_filename, (X_test, y_test), method)
 
-
+        ##
         fig = plt.figure(figsize=(12, 8))
         plt.plot(test_range, r_scores)
         plt.plot(test_range, u_scores)
         plt.plot(test_range, h_scores)
+        plt.title(method_name, fontsize=fontsize)
         plt.legend(['Random', 'Uncertainty', 'Human'], fontsize=fontsize, loc=4)
         plt.xlim([0, 100])
         plt.ylim([0.5, 1])
@@ -142,3 +169,25 @@ if __name__ == '__main__':
 
         plot_filename = os.path.join(HERE_PATH, 'plot', 'learning_curve_{}'.format(method_name))
         save_and_close_figure(fig, plot_filename, exts=['.png'])
+
+        ##
+        r_class_acc = class_accuracy_through_time(r_confusions)
+        u_class_acc = class_accuracy_through_time(u_confusions)
+        h_class_acc = class_accuracy_through_time(h_confusions)
+
+        class_names = ['NoCrystal', 'Crystal']
+        for iclass, class_name in enumerate(class_names):
+
+            fig = plt.figure(figsize=(12, 8))
+            plt.plot(test_range, r_class_acc[iclass])
+            plt.plot(test_range, u_class_acc[iclass])
+            plt.plot(test_range, h_class_acc[iclass])
+            plt.title('{} | {}'.format(class_name, method_name), fontsize=fontsize)
+            plt.legend(['Random', 'Uncertainty', 'Human'], fontsize=fontsize, loc=4)
+            plt.xlim([0, 100])
+            plt.ylim([0.5, 1])
+            plt.xlabel('Number of experiments', fontsize=fontsize)
+            plt.ylabel('{} prediction accuracy'.format(class_name), fontsize=fontsize)
+
+            plot_filename = os.path.join(HERE_PATH, 'plot', 'learning_curve_{}_{}'.format(method_name, class_name))
+            save_and_close_figure(fig, plot_filename, exts=['.png'])
