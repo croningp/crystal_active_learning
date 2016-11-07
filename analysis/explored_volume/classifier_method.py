@@ -62,9 +62,7 @@ def get_min_sample_per_class(y):
 def proba_normalize(x):
     x = np.array(x, dtype=float)
     div = np.sum(x, 1)
-    div = tuple([div] * x.shape[1])
-    div = np.vstack(div).T
-    return x / div
+    return x / div[:, None]
 
 
 N_SAMPLING_MONTECARLO = 100000
