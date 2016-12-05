@@ -12,7 +12,7 @@ sys.path.append(root_path)
 analysis_path = os.path.join(HERE_PATH, '..')
 sys.path.append(analysis_path)
 
-import json
+import pickle
 import random
 import numpy as np
 import multiprocessing
@@ -105,14 +105,6 @@ def class_accuracy_through_time(confusions):
 
 CLF_METHODS = {}
 
-from sklearn.neighbors import KNeighborsClassifier
-CLF_METHODS['KNN'] = {}
-CLF_METHODS['KNN']['blank_clf'] = KNeighborsClassifier()
-CLF_METHODS['KNN']['param_grid'] = {
-    'n_neighbors': [1, 3, 5, 11, 21],
-    'weights': ['uniform', 'distance']
-}
-
 from sklearn.ensemble import RandomForestClassifier
 CLF_METHODS['RandomForest'] = {}
 CLF_METHODS['RandomForest']['blank_clf'] = RandomForestClassifier()
@@ -138,9 +130,19 @@ CLF_METHODS['SVM']['param_grid'] = {
 }
 
 
+def save_pickle(filename, data):
+    with open(filename, 'w') as f:
+        pickle.dump(data, f)
+
 
 if __name__ == '__main__':
 
+    # setting a seed for reproducibility
+    seed = 0
+    random.seed(seed)
+    np.random.seed(seed)
+
+    #
     import filetools
     PLOT_FOLDER = os.path.join(HERE_PATH, 'plot')
     filetools.ensure_dir(PLOT_FOLDER)
@@ -151,14 +153,18 @@ if __name__ == '__main__':
 
     X_test, y_test = get_all_data()
 
+    all_learning_info = {}
 
     for method_name, method in CLF_METHODS.items():
+        print '### {}'.format(method_name)
+
+        all_learning_info[method_name] = {}
 
         clf = train_classifier_method(X_test, y_test, method)
-        print '{} : {}'.format(method_name, clf.best_params_)
         method_blank_clf = clone(method['blank_clf'].set_params(**clf.best_params_))
-
+        print 'clf params: {}'.format(clf.best_params_)
         ##
+
         RESULTS = {}
         for xp_name, filename in FILENAMES.items():
             test_range, scores, confusions = compute_learning_curve(filename, (X_test, y_test), method_blank_clf)
@@ -169,8 +175,15 @@ if __name__ == '__main__':
             RESULTS[xp_name]['scores'] = scores
             RESULTS[xp_name]['confusions'] = confusions
             RESULTS[xp_name]['class_acc'] = class_acc
+            RESULTS[xp_name]['unbiased_acc'] = np.mean(class_acc, 0)
 
+            print '{}: {}'.format(xp_name, RESULTS[xp_name]['unbiased_acc'][-1])
 
+        ##
+        all_learning_info[method_name]['clf_params'] = clf.best_params_
+        all_learning_info[method_name]['results'] = RESULTS
+
+        ##
         fig = plt.figure(figsize=(12, 8))
         for xp_name, result_dict in RESULTS.items():
             plt.plot(result_dict['test_range'], result_dict['scores'])
@@ -204,7 +217,7 @@ if __name__ == '__main__':
         ##
         fig = plt.figure(figsize=(12, 8))
         for xp_name, result_dict in RESULTS.items():
-            plt.plot(result_dict['test_range'], np.mean(result_dict['class_acc'], 0))
+            plt.plot(result_dict['test_range'], RESULTS[xp_name]['unbiased_acc'])
         plt.title(method_name, fontsize=fontsize)
         plt.legend(RESULTS.keys(), fontsize=fontsize, loc=2)
         plt.xlim([0, 100])
@@ -214,3 +227,7 @@ if __name__ == '__main__':
 
         plot_filename = os.path.join(PLOT_FOLDER, 'learning_curve_{}_unbiased'.format(method_name))
         save_and_close_figure(fig, plot_filename, exts=['.png'])
+
+    ##
+    info_filename = os.path.join(PLOT_FOLDER, 'info.pkl')
+    save_pickle(info_filename, all_learning_info)
