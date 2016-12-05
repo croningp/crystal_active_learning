@@ -24,6 +24,7 @@ from utils.csv_helpers import read_data
 from utils.plot_helpers import save_and_close_figure
 
 from tools import N_INIT_POINTS
+from tools import CRYSTAL_CLASS
 from tools import get_init_data
 from tools import get_new_data
 
@@ -84,7 +85,8 @@ def compute_learning_curve(filename, method, test_range=range(0, 101, 10)):
         X_test = proba_normalize(X_test) * 15
         y_pred = clf.predict(X_test)
 
-        scores.append(np.sum(y_pred)/float(N_SAMPLING_MONTECARLO))
+        # ratio of point behing crystal vs total of crystal
+        scores.append(np.sum(y_pred == CRYSTAL_CLASS)/float(N_SAMPLING_MONTECARLO))
 
     return test_range, scores
 
@@ -120,30 +122,26 @@ CLF_METHODS['SVM']['param_grid'] = {
 
 if __name__ == '__main__':
 
-    random_filename = os.path.join(root_path, 'real_experiments', 'random', '0', 'data.csv')
+    import filetools
+    PLOT_FOLDER = os.path.join(HERE_PATH, 'plot')
+    filetools.ensure_dir(PLOT_FOLDER)
 
-    uncertainty_filename = os.path.join(root_path, 'real_experiments', 'uncertainty', '0', '0010', 'data.csv')
-
-    human_filename = os.path.join(root_path, 'real_experiments', 'human', '0', 'data.csv')
-
+    from tools import FILENAMES
 
     for method_name, method in CLF_METHODS.items():
 
-        test_range, r_scores = compute_learning_curve(random_filename, method)
-        test_range, u_scores = compute_learning_curve(uncertainty_filename, method)
-        test_range, h_scores = compute_learning_curve(human_filename, method)
-
-
         fig = plt.figure(figsize=(12, 8))
-        plt.plot(test_range, r_scores)
-        plt.plot(test_range, u_scores)
-        plt.plot(test_range, h_scores)
+
+        for xp_name, filename in FILENAMES.items():
+            test_range, scores = compute_learning_curve(filename, method)
+            plt.plot(test_range, scores)
+
         plt.title(method_name, fontsize=fontsize)
-        plt.legend(['Random', 'Uncertainty', 'Human'], fontsize=fontsize, loc=1)
+        plt.legend(FILENAMES.keys(), fontsize=fontsize, loc=1)
         plt.xlim([0, 100])
         # plt.ylim([0.5, 1])
         plt.xlabel('Number of experiments', fontsize=fontsize)
         plt.ylabel('Prediction accuracy', fontsize=fontsize)
 
-        plot_filename = os.path.join(HERE_PATH, 'plot', 'volume_montecarlo_{}'.format(method_name))
+        plot_filename = os.path.join(PLOT_FOLDER, 'volume_montecarlo_{}'.format(method_name))
         save_and_close_figure(fig, plot_filename, exts=['.png'])

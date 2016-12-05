@@ -25,8 +25,6 @@ from utils.csv_helpers import read_data
 from utils.plot_helpers import save_and_close_figure
 
 from tools import N_INIT_POINTS
-from tools import get_init_data
-from tools import get_new_data
 
 import matplotlib
 import matplotlib.pyplot as plt
@@ -133,76 +131,71 @@ CLF_METHODS['SVM']['param_grid'] = {
 
 if __name__ == '__main__':
 
-    random_filename = os.path.join(root_path, 'real_experiments', 'random', '0', 'data.csv')
+    import filetools
+    PLOT_FOLDER = os.path.join(HERE_PATH, 'plot')
+    filetools.ensure_dir(PLOT_FOLDER)
 
-    uncertainty_filename = os.path.join(root_path, 'real_experiments', 'uncertainty', '0', '0010', 'data.csv')
+    from tools import FILENAMES
+    from tools import get_all_data
 
-    human_filename = os.path.join(root_path, 'real_experiments', 'human', '0', 'data.csv')
 
-
-    X_test, y_test = read_data(random_filename)
-    X, y = get_new_data(uncertainty_filename)
-    X_test = np.vstack((X_test, X))
-    y_test = np.hstack((y_test, y))
-    X, y = get_new_data(human_filename)
-    X_test = np.vstack((X_test, X))
-    y_test = np.hstack((y_test, y))
+    X_test, y_test = get_all_data()
 
 
     for method_name, method in CLF_METHODS.items():
 
-        test_range, r_scores, r_confusions = compute_learning_curve(random_filename, (X_test, y_test), method)
-        test_range, u_scores, u_confusions = compute_learning_curve(uncertainty_filename, (X_test, y_test), method)
-        test_range, h_scores, h_confusions = compute_learning_curve(human_filename, (X_test, y_test), method)
+        RESULTS = {}
+        for xp_name, filename in FILENAMES.items():
+            test_range, scores, confusions = compute_learning_curve(filename, (X_test, y_test), method)
+            class_acc = class_accuracy_through_time(confusions)
 
-        ##
+            RESULTS[xp_name] = {}
+            RESULTS[xp_name]['test_range'] = test_range
+            RESULTS[xp_name]['scores'] = scores
+            RESULTS[xp_name]['confusions'] = confusions
+            RESULTS[xp_name]['class_acc'] = class_acc
+
+
         fig = plt.figure(figsize=(12, 8))
-        plt.plot(test_range, r_scores)
-        plt.plot(test_range, u_scores)
-        plt.plot(test_range, h_scores)
+        for xp_name, result_dict in RESULTS.items():
+            plt.plot(result_dict['test_range'], result_dict['scores'])
         plt.title(method_name, fontsize=fontsize)
-        plt.legend(['Random', 'Uncertainty', 'Human'], fontsize=fontsize, loc=4)
+        plt.legend(RESULTS.keys(), fontsize=fontsize, loc=4)
         plt.xlim([0, 100])
         plt.ylim([0.5, 1])
         plt.xlabel('Number of experiments', fontsize=fontsize)
         plt.ylabel('Prediction accuracy', fontsize=fontsize)
 
-        plot_filename = os.path.join(HERE_PATH, 'plot', 'learning_curve_{}'.format(method_name))
+        plot_filename = os.path.join(PLOT_FOLDER, 'learning_curve_{}'.format(method_name))
         save_and_close_figure(fig, plot_filename, exts=['.png'])
 
         ##
-        r_class_acc = class_accuracy_through_time(r_confusions)
-        u_class_acc = class_accuracy_through_time(u_confusions)
-        h_class_acc = class_accuracy_through_time(h_confusions)
-
         class_names = ['NoCrystal', 'Crystal']
         for iclass, class_name in enumerate(class_names):
 
             fig = plt.figure(figsize=(12, 8))
-            plt.plot(test_range, r_class_acc[iclass])
-            plt.plot(test_range, u_class_acc[iclass])
-            plt.plot(test_range, h_class_acc[iclass])
+            for xp_name, result_dict in RESULTS.items():
+                plt.plot(result_dict['test_range'], result_dict['class_acc'][iclass])
             plt.title('{} | {}'.format(class_name, method_name), fontsize=fontsize)
-            plt.legend(['Random', 'Uncertainty', 'Human'], fontsize=fontsize, loc=4)
+            plt.legend(RESULTS.keys(), fontsize=fontsize, loc=4)
             plt.xlim([0, 100])
             plt.ylim([0.5, 1])
             plt.xlabel('Number of experiments', fontsize=fontsize)
             plt.ylabel('{} prediction accuracy'.format(class_name), fontsize=fontsize)
 
-            plot_filename = os.path.join(HERE_PATH, 'plot', 'learning_curve_{}_{}'.format(method_name, class_name))
+            plot_filename = os.path.join(PLOT_FOLDER, 'learning_curve_{}_{}'.format(method_name, class_name))
             save_and_close_figure(fig, plot_filename, exts=['.png'])
 
         ##
         fig = plt.figure(figsize=(12, 8))
-        plt.plot(test_range, np.mean(r_class_acc, 0))
-        plt.plot(test_range, np.mean(u_class_acc, 0))
-        plt.plot(test_range, np.mean(h_class_acc, 0))
+        for xp_name, result_dict in RESULTS.items():
+            plt.plot(result_dict['test_range'], np.mean(result_dict['class_acc'], 0))
         plt.title(method_name, fontsize=fontsize)
-        plt.legend(['Random', 'Uncertainty', 'Human'], fontsize=fontsize, loc=4)
+        plt.legend(RESULTS.keys(), fontsize=fontsize, loc=2)
         plt.xlim([0, 100])
         plt.ylim([0.5, 1])
         plt.xlabel('Number of experiments', fontsize=fontsize)
         plt.ylabel('Prediction accuracy unbiased', fontsize=fontsize)
 
-        plot_filename = os.path.join(HERE_PATH, 'plot', 'learning_curve_{}_unbiased'.format(method_name))
+        plot_filename = os.path.join(PLOT_FOLDER, 'learning_curve_{}_unbiased'.format(method_name))
         save_and_close_figure(fig, plot_filename, exts=['.png'])
