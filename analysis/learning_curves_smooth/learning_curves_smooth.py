@@ -18,6 +18,7 @@ import numpy as np
 import multiprocessing
 
 from sklearn import grid_search
+from sklearn.base import clone
 from sklearn.metrics import accuracy_score
 from sklearn.metrics import confusion_matrix
 
@@ -58,7 +59,7 @@ def get_min_sample_per_class(y):
     return min_sample_per_class
 
 
-def compute_learning_curve(filename, (X_test, y_test), method, test_range=range(0, 101, 10)):
+def compute_learning_curve(filename, (X_test, y_test), blank_clf, test_range=range(0, 101, 10)):
 
     X, y = read_data(filename)
 
@@ -70,7 +71,8 @@ def compute_learning_curve(filename, (X_test, y_test), method, test_range=range(
         X_train = X[0:ind]
         y_train = y[0:ind]
 
-        clf = train_classifier_method(X_train, y_train, method)
+        clf = clone(blank_clf)
+        clf.fit(X_train, y_train)
 
         prediction_accuracy = clf.score(X_test, y_test)
         scores.append(prediction_accuracy)
@@ -107,7 +109,7 @@ from sklearn.neighbors import KNeighborsClassifier
 CLF_METHODS['KNN'] = {}
 CLF_METHODS['KNN']['blank_clf'] = KNeighborsClassifier()
 CLF_METHODS['KNN']['param_grid'] = {
-    'n_neighbors': [1, 2, 3, 5, 10, 20],
+    'n_neighbors': [1, 3, 5, 11, 21],
     'weights': ['uniform', 'distance']
 }
 
@@ -115,18 +117,26 @@ from sklearn.ensemble import RandomForestClassifier
 CLF_METHODS['RandomForest'] = {}
 CLF_METHODS['RandomForest']['blank_clf'] = RandomForestClassifier()
 CLF_METHODS['RandomForest']['param_grid'] = {
-    'n_estimators': [10, 20, 30, 50, 100, 200, 500]
+    'n_estimators': [50, 100, 200, 500]
+}
+
+from sklearn.ensemble import AdaBoostClassifier
+CLF_METHODS['Adaboost'] = {}
+CLF_METHODS['Adaboost']['blank_clf'] = AdaBoostClassifier()
+CLF_METHODS['Adaboost']['param_grid'] = {
+    'n_estimators': [50, 100, 200, 500]
 }
 
 from sklearn.svm import SVC
 CLF_METHODS['SVM'] = {}
 CLF_METHODS['SVM']['blank_clf'] = SVC()
 CLF_METHODS['SVM']['param_grid'] = {
-    'C': np.logspace(-5, 5, 21),
-    'gamma': np.logspace(-5, 5, 21),
+    'C': np.logspace(-3, 3, 13),
+    'gamma': np.logspace(-3, 3, 13),
     'kernel': ['rbf'],
     'probability': [True]
 }
+
 
 
 if __name__ == '__main__':
@@ -144,9 +154,14 @@ if __name__ == '__main__':
 
     for method_name, method in CLF_METHODS.items():
 
+        clf = train_classifier_method(X_test, y_test, method)
+        print '{} : {}'.format(method_name, clf.best_params_)
+        method_blank_clf = clone(method['blank_clf'].set_params(**clf.best_params_))
+
+        ##
         RESULTS = {}
         for xp_name, filename in FILENAMES.items():
-            test_range, scores, confusions = compute_learning_curve(filename, (X_test, y_test), method)
+            test_range, scores, confusions = compute_learning_curve(filename, (X_test, y_test), method_blank_clf)
             class_acc = class_accuracy_through_time(confusions)
 
             RESULTS[xp_name] = {}
@@ -193,7 +208,7 @@ if __name__ == '__main__':
         plt.title(method_name, fontsize=fontsize)
         plt.legend(RESULTS.keys(), fontsize=fontsize, loc=2)
         plt.xlim([0, 100])
-        plt.ylim([0.5, 1])
+        plt.ylim([0.6, 0.9])
         plt.xlabel('Number of experiments', fontsize=fontsize)
         plt.ylabel('Prediction accuracy unbiased', fontsize=fontsize)
 
