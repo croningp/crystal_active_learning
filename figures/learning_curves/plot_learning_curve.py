@@ -56,7 +56,7 @@ if __name__ == '__main__':
 
     plt.title('Evolution of Crystalization Model Quality', fontsize=fontsize)
     plt.legend(['Algorithm', 'Human', 'Random'], fontsize=fontsize, loc=2)
-    plt.xlim([0, 100])
+    plt.xlim([-1, 101])
     plt.ylim([65, 85])
     y_tick_pos = [65, 70, 75, 80, 85]
     plt.yticks(y_tick_pos, ['{}%'.format(i) for i in y_tick_pos])
