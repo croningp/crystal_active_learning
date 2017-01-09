@@ -6,3 +6,4 @@ analysis/learning_curves/plot
 analysis/explored_volume/plot
 analysis/learning_curves_smooth/plot
 figures/learning_curves/plot
+figures/convex_hull/plot
