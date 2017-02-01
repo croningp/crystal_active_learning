@@ -62,7 +62,7 @@ if __name__ == '__main__':
     plt.yticks(y_tick_pos, ['{}%'.format(i) for i in y_tick_pos])
 
     plt.xlabel('Number of Experiments', fontsize=fontsize)
-    plt.ylabel('Prediction Accuracy', fontsize=fontsize)
+    plt.ylabel('Prediction Accuracy - %', fontsize=fontsize)
 
     #
     import filetools

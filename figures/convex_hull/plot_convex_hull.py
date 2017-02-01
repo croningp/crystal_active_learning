@@ -86,7 +86,7 @@ if __name__ == '__main__':
     plt.xlim([-1, 101])
 
     plt.xlabel('Number of Experiments', fontsize=fontsize)
-    plt.ylabel('Exploration Metric\n Convex Hull Volume of Found Crystals - $mL^4$', fontsize=fontsize)
+    plt.ylabel('Explored Crystalization Space - AU', fontsize=fontsize)
 
     plt.ticklabel_format(style='sci', axis='y', scilimits=(0,0))
 
