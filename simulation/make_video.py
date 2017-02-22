@@ -30,8 +30,7 @@ def make_video_from_folder(source_folder, video_filename, fps=10, img_format="%0
 if __name__ == '__main__':
 
     problem_names = ['circle', 'sinus']
-    method_names = ['random', 'uncertainty', 'uncertainty_single']
-    # method_names = ['uncertainty', 'uncertainty_single']
+    method_names = ['random', 'uncertainty_batch', 'uncertainty_single', 'uncertainty_batch_no_repulsion']
 
     results = {}
 

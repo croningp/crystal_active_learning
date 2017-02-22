@@ -21,12 +21,12 @@ def compute_normalized_repulsion(X, X_repulse, gamma_repulse):
     return out / np.max(out)
 
 
-def compute_weights(X_test, X_proba, clf=None, X_repulse=None):
+def compute_weights(X_test, X_proba, clf=None, X_repulse=None, batch_repulsion=True):
     entropy = compute_normalized_entropy(X_proba)
 
     repulsion = np.zeros(entropy.shape)
     if clf is not None:
-        if X_repulse is not None and X_repulse.shape[1] > 0:
+        if X_repulse is not None and X_repulse.shape[1] > 0 and batch_repulsion:
             gamma_repulse = clf.best_estimator_.gamma * 10.
             repulsion = compute_normalized_repulsion(X_test, X_repulse, gamma_repulse)
 
@@ -51,7 +51,7 @@ def compute_best_temperature(weights, t_candidate=np.logspace(-5, 1, 100), perce
     return t_candidate[np.argmin(errors)]
 
 
-def generate_next_samples(n_samples, clf, n_dim, n_sampling):
+def generate_next_samples(n_samples, clf, n_dim, n_sampling, batch_repulsion=True):
 
     all_run_info = []
     all_X_selected = []
@@ -62,7 +62,7 @@ def generate_next_samples(n_samples, clf, n_dim, n_sampling):
 
         X_proba = clf.best_estimator_.predict_proba(X_sampled)
 
-        weights, entropy, repulsion = compute_weights(X_sampled, X_proba, clf, np.atleast_2d(all_X_selected))
+        weights, entropy, repulsion = compute_weights(X_sampled, X_proba, clf, np.atleast_2d(all_X_selected), batch_repulsion=batch_repulsion)
 
         best_temperature = compute_best_temperature(weights)
         selection_proba = soft_max(weights, best_temperature)

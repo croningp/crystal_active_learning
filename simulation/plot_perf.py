@@ -30,7 +30,7 @@ matplotlib.rcParams.update({'font.size': fontsize})
 if __name__ == '__main__':
 
     problem_names = ['circle', 'sinus']
-    method_names = ['random', 'uncertainty', 'uncertainty_single']
+    method_names = ['random', 'uncertainty_batch_no_repulsion', 'uncertainty_batch', 'uncertainty_single']
 
     results = {}
 
@@ -62,7 +62,6 @@ if __name__ == '__main__':
     #
     figures = []
     axs = []
-    colors = ['b', 'g', 'r']
     for problem_name in problem_names:
         fig = plt.figure(figsize=(12, 8))
         all_data = []
@@ -72,7 +71,6 @@ if __name__ == '__main__':
             data = np.array(data)
             if method_name == 'uncertainty_single':
                 data = data[:, 0:-1:10]
-
             all_data.append(data)
 
         all_data = np.array(all_data)
@@ -84,7 +82,7 @@ if __name__ == '__main__':
         ax.set_ylabel('Prediction Accuracy', fontsize=fontsize)
         ylim = ax.get_ylim()
         ax.set_ylim([ylim[0], 1 + 0.05 * np.diff(ylim)])
-        ax.legend(bbox_to_anchor=(1, 0.25), fontsize=fontsize)
+        ax.legend(bbox_to_anchor=(1, 0.35), fontsize=fontsize)
         figures.append(fig)
 
     #

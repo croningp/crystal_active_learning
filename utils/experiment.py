@@ -8,7 +8,7 @@ from classifier import classification_accuracy
 from uncertainty import generate_next_samples
 
 
-def run_full_xp(n_iteration, n_selected_per_iteration, n_sampling, class_func, init_X):
+def run_full_xp(n_iteration, n_selected_per_iteration, n_sampling, class_func, init_X, batch_repulsion=True):
 
     X = init_X
 
@@ -16,7 +16,7 @@ def run_full_xp(n_iteration, n_selected_per_iteration, n_sampling, class_func, i
     for _ in range(n_iteration):
         y = class_func(X)
         clf = train_classifier(X, y)
-        all_X_selected, all_run_info = generate_next_samples(n_selected_per_iteration, clf, X.shape[1], n_sampling)
+        all_X_selected, all_run_info = generate_next_samples(n_selected_per_iteration, clf, X.shape[1], n_sampling, batch_repulsion=batch_repulsion)
         #
         info = {}
         info['X'] = X

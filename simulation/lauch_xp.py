@@ -51,9 +51,10 @@ if __name__ == '__main__':
 
             X_test = np.random.rand(N_TEST, 2)
 
-            # uncertainty
-            save_folder = os.path.join(base_save_folder, 'uncertainty', str(i))
+            # uncertainty_batch
+            save_folder = os.path.join(base_save_folder, 'uncertainty_batch', str(i))
             if not os.path.exists(save_folder):
+                print 'Working on {}'.format(save_folder)
                 eval_savefilename = os.path.join(save_folder, 'xp_eval.json')
 
                 uncertainty_all_info = run_full_xp(N_ITERATION, N_SELECTED, N_SAMPLING, class_func, X)
@@ -62,9 +63,10 @@ if __name__ == '__main__':
                 uncertainty_xp_eval = evaluate_xp(uncertainty_all_info, X_test, class_func)
                 save_eval(eval_savefilename, uncertainty_xp_eval)
 
-            # random
+            # uncertainty_single
             save_folder = os.path.join(base_save_folder, 'uncertainty_single', str(i))
             if not os.path.exists(save_folder):
+                print 'Working on {}'.format(save_folder)
                 eval_savefilename = os.path.join(save_folder, 'xp_eval.json')
 
                 single_n_iteration = N_ITERATION * N_SELECTED
@@ -74,9 +76,22 @@ if __name__ == '__main__':
                 uncertainty_single_xp_eval = evaluate_xp(uncertainty_single_all_info, X_test, class_func)
                 save_eval(eval_savefilename, uncertainty_single_xp_eval)
 
+            # uncertainty_batch_no_repulsion
+            save_folder = os.path.join(base_save_folder, 'uncertainty_batch_no_repulsion', str(i))
+            if not os.path.exists(save_folder):
+                print 'Working on {}'.format(save_folder)
+                eval_savefilename = os.path.join(save_folder, 'xp_eval.json')
+
+                uncertainty_batch_no_rep_all_info = run_full_xp(N_ITERATION, N_SELECTED, N_SAMPLING, class_func, X, batch_repulsion=False)
+                plot_full_xp_in_folder(save_folder, class_func, uncertainty_batch_no_rep_all_info, exts=['.png'])
+
+                uncertainty_batch_no_rep_xp_eval = evaluate_xp(uncertainty_batch_no_rep_all_info, X_test, class_func)
+                save_eval(eval_savefilename, uncertainty_batch_no_rep_xp_eval)
+
             # random
             save_folder = os.path.join(base_save_folder, 'random', str(i))
             if not os.path.exists(save_folder):
+                print 'Working on {}'.format(save_folder)
                 eval_savefilename = os.path.join(save_folder, 'xp_eval.json')
 
                 all_random_info = run_random_xp(N_ITERATION, N_SELECTED, N_SAMPLING, class_func, X)
