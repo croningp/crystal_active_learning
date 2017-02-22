@@ -34,6 +34,7 @@ import seaborn as sns
 
 # design figure
 fontsize = 22
+linewidth = 3
 matplotlib.rc('xtick', labelsize=20)
 matplotlib.rc('ytick', labelsize=20)
 matplotlib.rcParams.update({'font.size': fontsize})
@@ -150,11 +151,12 @@ if __name__ == '__main__':
     from tools import FILENAMES
     from tools import get_all_data
 
+    XP_NAMES = ['uncertainty_0', 'uncertainty_1', 'human_0', 'human_1', 'random_0', 'random_1']
+    LEGEND_NAMES = ['Algorithm - run 1', 'Algorithm - run 2', 'Human     - run 1', 'Human     - run 2', 'Random   - run 1', 'Random   - run 2']
 
     X_test, y_test = get_all_data()
 
     all_learning_info = {}
-
     for method_name, method in CLF_METHODS.items():
         print '### {}'.format(method_name)
 
@@ -185,48 +187,52 @@ if __name__ == '__main__':
 
         ##
         fig = plt.figure(figsize=(12, 8))
-        for xp_name, result_dict in RESULTS.items():
-            plt.plot(result_dict['test_range'], result_dict['scores'])
+        for xp_name in XP_NAMES:
+            result_dict = RESULTS[xp_name]
+            plt.plot(result_dict['test_range'], result_dict['scores'], linewidth=linewidth)
         plt.title(method_name, fontsize=fontsize)
-        plt.legend(RESULTS.keys(), fontsize=fontsize, loc=4)
+        legend = plt.legend(LEGEND_NAMES, fontsize=fontsize, bbox_to_anchor=(1, 1), loc=2, borderaxespad=0.)
         plt.xlim([0, 100])
         plt.ylim([0.5, 1])
         plt.xlabel('Number of experiments', fontsize=fontsize)
         plt.ylabel('Prediction accuracy', fontsize=fontsize)
+        plt.tight_layout()
 
         plot_filename = os.path.join(PLOT_FOLDER, 'learning_curve_{}'.format(method_name))
-        save_and_close_figure(fig, plot_filename, exts=['.png'])
+        save_and_close_figure(fig, plot_filename, exts=['.png'], legend=legend)
 
         ##
         class_names = ['NoCrystal', 'Crystal']
         for iclass, class_name in enumerate(class_names):
 
             fig = plt.figure(figsize=(12, 8))
-            for xp_name, result_dict in RESULTS.items():
-                plt.plot(result_dict['test_range'], result_dict['class_acc'][iclass])
+            for xp_name in XP_NAMES:
+                result_dict = RESULTS[xp_name]
+                plt.plot(result_dict['test_range'], result_dict['class_acc'][iclass], linewidth=linewidth)
             plt.title('{} | {}'.format(class_name, method_name), fontsize=fontsize)
-            plt.legend(RESULTS.keys(), fontsize=fontsize, loc=4)
+            legend = plt.legend(LEGEND_NAMES, fontsize=fontsize, bbox_to_anchor=(1, 1), loc=2, borderaxespad=0.)
             plt.xlim([0, 100])
             plt.ylim([0.5, 1])
             plt.xlabel('Number of experiments', fontsize=fontsize)
             plt.ylabel('{} prediction accuracy'.format(class_name), fontsize=fontsize)
 
             plot_filename = os.path.join(PLOT_FOLDER, 'learning_curve_{}_{}'.format(method_name, class_name))
-            save_and_close_figure(fig, plot_filename, exts=['.png'])
+            save_and_close_figure(fig, plot_filename, exts=['.png'], legend=legend)
 
         ##
         fig = plt.figure(figsize=(12, 8))
-        for xp_name, result_dict in RESULTS.items():
-            plt.plot(result_dict['test_range'], RESULTS[xp_name]['unbiased_acc'])
+        for xp_name in XP_NAMES:
+            result_dict = RESULTS[xp_name]
+            plt.plot(result_dict['test_range'], result_dict['unbiased_acc'], linewidth=linewidth)
         plt.title(method_name, fontsize=fontsize)
-        plt.legend(RESULTS.keys(), fontsize=fontsize, loc=2)
+        legend = plt.legend(LEGEND_NAMES, fontsize=fontsize, bbox_to_anchor=(1, 1), loc=2, borderaxespad=0.)
         plt.xlim([0, 100])
         plt.ylim([0.6, 0.9])
         plt.xlabel('Number of experiments', fontsize=fontsize)
         plt.ylabel('Prediction accuracy unbiased', fontsize=fontsize)
 
         plot_filename = os.path.join(PLOT_FOLDER, 'learning_curve_{}_unbiased'.format(method_name))
-        save_and_close_figure(fig, plot_filename, exts=['.png'])
+        save_and_close_figure(fig, plot_filename, exts=['.png'], legend=legend)
 
     ##
     info_filename = os.path.join(PLOT_FOLDER, 'info.pkl')

@@ -148,12 +148,15 @@ def plot_uncertainty_pipeline(X, y, run_info, X_sampled=None):
     return fig
 
 
-def save_and_close_figure(fig, filebasename, exts=['.png', '.eps', '.svg'], dpi=100):
+def save_and_close_figure(fig, filebasename, exts=['.png', '.eps', '.svg'], dpi=100, legend=None):
 
     for ext in exts:
         # save
         filepath = filebasename + ext
-        fig.savefig(filepath, dpi=dpi)
+        if legend is not None:
+            fig.savefig(filepath, dpi=dpi, bbox_extra_artists=(legend,), bbox_inches='tight')
+        else:
+            fig.savefig(filepath, dpi=dpi)
 
     plt.close(fig)
 

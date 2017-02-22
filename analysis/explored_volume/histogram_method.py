@@ -33,6 +33,7 @@ import seaborn as sns
 
 # design figure
 fontsize = 22
+linewidth = 3
 matplotlib.rc('xtick', labelsize=20)
 matplotlib.rc('ytick', labelsize=20)
 matplotlib.rcParams.update({'font.size': fontsize})
@@ -53,19 +54,21 @@ if __name__ == '__main__':
     filetools.ensure_dir(PLOT_FOLDER)
 
     radius_list = np.logspace(-2, 1, 30)
-    # radius_list = np.linspace(0.1, 8, 10)
+
+    XP_NAMES = ['uncertainty_0', 'uncertainty_1', 'human_0', 'human_1', 'random_0', 'random_1']
+    LEGEND_NAMES = ['Algorithm - run 1', 'Algorithm - run 2', 'Human     - run 1', 'Human     - run 2', 'Random   - run 1', 'Random   - run 2']
 
     fig = plt.figure(figsize=(12, 8))
-    for xp_name, _ in FILENAMES.items():
+    for xp_name in XP_NAMES:
         X, y = get_data_xp(xp_name)
         points = X[y == CRYSTAL_CLASS, :]
         x_plot, hist = hist_from_X(points, bins = radius_list)
-        plt.errorbar(x_plot, hist)
+        plt.errorbar(x_plot, hist, linewidth=linewidth)
 
-    # plt.ylim([-0.05, 1.05])
-    plt.legend(FILENAMES.keys(), fontsize=fontsize, loc=1)
+    plt.ylim([-0.01, 0.2])
+    legend = plt.legend(LEGEND_NAMES, fontsize=fontsize, bbox_to_anchor=(1, 1), loc=2, borderaxespad=0.)
     plt.xlabel('Radius', fontsize=fontsize)
-    plt.ylabel('Histogram of crystals within dist of each others', fontsize=fontsize)
+    plt.ylabel('Histogram of crystals within radius of each others', fontsize=fontsize)
 
     plot_filename = os.path.join(PLOT_FOLDER, 'hist_dist_beween_crystals')
-    save_and_close_figure(fig, plot_filename, exts=['.png'])
+    save_and_close_figure(fig, plot_filename, exts=['.png'], legend=legend)

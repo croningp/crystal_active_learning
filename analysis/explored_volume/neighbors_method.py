@@ -33,6 +33,7 @@ import seaborn as sns
 
 # design figure
 fontsize = 22
+linewidth = 3
 matplotlib.rc('xtick', labelsize=20)
 matplotlib.rc('ytick', labelsize=20)
 matplotlib.rcParams.update({'font.size': fontsize})
@@ -85,21 +86,24 @@ if __name__ == '__main__':
 
     all_means = []
 
+    XP_NAMES = ['uncertainty_0', 'uncertainty_1', 'human_0', 'human_1', 'random_0', 'random_1']
+    LEGEND_NAMES = ['Algorithm - run 1', 'Algorithm - run 2', 'Human     - run 1', 'Human     - run 2', 'Random   - run 1', 'Random   - run 2']
+
     fig = plt.figure(figsize=(12, 8))
-    for xp_name, _ in FILENAMES.items():
+    for xp_name in XP_NAMES:
         X, y = get_data_xp(xp_name)
         points = X[y == CRYSTAL_CLASS, :]
         means, _ = map_n_neighbors(points, radius_list)
         all_means.append(means)
-        plt.errorbar(radius_list, means)
+        plt.plot(radius_list, means, linewidth=linewidth)
 
-    plt.ylim([-0.05, 1.05])
-    plt.legend(FILENAMES.keys(), fontsize=fontsize, loc=4)
+    plt.ylim([0, 1.05])
+    legend = plt.legend(LEGEND_NAMES, fontsize=fontsize, bbox_to_anchor=(1, 1), loc=2, borderaxespad=0.)
     plt.xlabel('Radius', fontsize=fontsize)
     plt.ylabel('Average ratio of crystals within \n radius of other crystals', fontsize=fontsize)
 
     plot_filename = os.path.join(PLOT_FOLDER, 'volume_neighbors_radius')
-    save_and_close_figure(fig, plot_filename, exts=['.png'])
+    save_and_close_figure(fig, plot_filename, exts=['.png'], legend=legend)
 
     ##
     std_n_coverage = np.std(all_means, axis=0)
@@ -107,8 +111,12 @@ if __name__ == '__main__':
     selected_radius =  radius_list[selected_ind]
 
     fig = plt.figure(figsize=(12, 8))
-    plt.plot(radius_list, std_n_coverage)
-    plt.scatter(selected_radius, std_n_coverage[selected_ind], c='r')
+    plt.plot(radius_list, std_n_coverage, linewidth=linewidth)
+    plt.scatter(selected_radius, std_n_coverage[selected_ind], 100, c='r')
+    plt.plot([selected_radius, selected_radius], [0, std_n_coverage[selected_ind]], 'r')
+    plt.plot([0, selected_radius], [std_n_coverage[selected_ind], std_n_coverage[selected_ind]], 'r')
+    plt.xlim([0, 10])
+    plt.ylim([-0.001, 0.2])
     plt.xlabel('Radius', fontsize=fontsize)
     plt.ylabel('Standard deviation of neighbors \n coverage between experiments', fontsize=fontsize)
 
@@ -117,15 +125,16 @@ if __name__ == '__main__':
 
     ##
     fig = plt.figure(figsize=(12, 8))
-    for xp_name, filename in FILENAMES.items():
+    for xp_name in XP_NAMES:
+        filename = FILENAMES[xp_name]
         test_range, volumes = compute_volume_neighbors(filename, selected_radius)
-        plt.plot(test_range, volumes)
+        plt.plot(test_range, volumes, linewidth=linewidth)
 
-    plt.legend(FILENAMES.keys(), fontsize=fontsize, loc=3)
+    legend = plt.legend(LEGEND_NAMES, fontsize=fontsize, bbox_to_anchor=(1, 1), loc=2, borderaxespad=0.)
     plt.xlim([0, 100])
-    plt.ylim([0, 1])
+    plt.ylim([0.4, 1])
     plt.xlabel('Number of experiments', fontsize=fontsize)
     plt.ylabel('Average ratio of crystals found within \n given distance of other crystals', fontsize=fontsize)
 
     plot_filename = os.path.join(PLOT_FOLDER, 'volume_neighbors')
-    save_and_close_figure(fig, plot_filename, exts=['.png'])
+    save_and_close_figure(fig, plot_filename, exts=['.png'], legend=legend)

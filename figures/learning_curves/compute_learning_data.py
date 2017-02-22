@@ -102,6 +102,20 @@ def class_accuracy_through_time(confusions):
 
 CLF_METHODS = {}
 
+from sklearn.ensemble import RandomForestClassifier
+CLF_METHODS['RandomForest'] = {}
+CLF_METHODS['RandomForest']['blank_clf'] = RandomForestClassifier()
+CLF_METHODS['RandomForest']['param_grid'] = {
+    'n_estimators': [50, 100, 200, 500]
+}
+
+from sklearn.ensemble import AdaBoostClassifier
+CLF_METHODS['Adaboost'] = {}
+CLF_METHODS['Adaboost']['blank_clf'] = AdaBoostClassifier()
+CLF_METHODS['Adaboost']['param_grid'] = {
+    'n_estimators': [50, 100, 200, 500]
+}
+
 from sklearn.svm import SVC
 CLF_METHODS['SVM'] = {}
 CLF_METHODS['SVM']['blank_clf'] = SVC()

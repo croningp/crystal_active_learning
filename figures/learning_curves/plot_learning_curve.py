@@ -34,40 +34,47 @@ def load_pickle(filename):
 
 if __name__ == '__main__':
 
+    import filetools
+
     learning_data_filename = os.path.join(HERE_PATH, 'learning_data.pkl')
     data = load_pickle(learning_data_filename)
 
+    for method_name, method in data.items():
 
-    RESULTS = data['SVM']['results']
+        RESULTS = data[method_name]['results']
 
-    TEST_RANGE = RESULTS['random_0']['test_range']
+        TEST_RANGE = RESULTS['random_0']['test_range']
 
-    AVG_RESULTS = {}
-    AVG_RESULTS['HUMAN'] = 100 * np.mean(np.vstack((RESULTS['human_0']['unbiased_acc'], RESULTS['human_1']['unbiased_acc'])), axis=0)
-    AVG_RESULTS['ALGORITHM'] = 100 * np.mean(np.vstack((RESULTS['uncertainty_0']['unbiased_acc'], RESULTS['uncertainty_1']['unbiased_acc'])), axis=0)
-    AVG_RESULTS['RANDOM'] = 100 * np.mean(np.vstack((RESULTS['random_0']['unbiased_acc'], RESULTS['random_1']['unbiased_acc'])), axis=0)
+        AVG_RESULTS = {}
+        AVG_RESULTS['HUMAN'] = 100 * np.mean(np.vstack((RESULTS['human_0']['unbiased_acc'], RESULTS['human_1']['unbiased_acc'])), axis=0)
+        AVG_RESULTS['ALGORITHM'] = 100 * np.mean(np.vstack((RESULTS['uncertainty_0']['unbiased_acc'], RESULTS['uncertainty_1']['unbiased_acc'])), axis=0)
+        AVG_RESULTS['RANDOM'] = 100 * np.mean(np.vstack((RESULTS['random_0']['unbiased_acc'], RESULTS['random_1']['unbiased_acc'])), axis=0)
 
-    ##
-    fig = plt.figure(figsize=(12, 8))
+        ##
+        fig = plt.figure(figsize=(12, 8))
 
-    plt.plot(TEST_RANGE, AVG_RESULTS['ALGORITHM'], 'r', linestyle='-', linewidth=linewidth, marker='o', markersize=markersize)
-    plt.plot(TEST_RANGE, AVG_RESULTS['HUMAN'], 'g', linestyle='-', linewidth=linewidth, marker='s', markersize=markersize)
-    plt.plot(TEST_RANGE, AVG_RESULTS['RANDOM'], 'b', linestyle='-', linewidth=linewidth, marker='D', markersize=markersize)
+        plt.plot(TEST_RANGE, AVG_RESULTS['ALGORITHM'], 'r', linestyle='-', linewidth=linewidth, marker='o', markersize=markersize)
+        plt.plot(TEST_RANGE, AVG_RESULTS['HUMAN'], 'g', linestyle='-', linewidth=linewidth, marker='s', markersize=markersize)
+        plt.plot(TEST_RANGE, AVG_RESULTS['RANDOM'], 'b', linestyle='-', linewidth=linewidth, marker='D', markersize=markersize)
 
-    plt.title('Evolution of Crystalization Model Quality', fontsize=fontsize)
-    plt.legend(['Algorithm', 'Human', 'Random'], fontsize=fontsize, loc=2)
-    plt.xlim([-1, 101])
-    plt.ylim([65, 85])
-    y_tick_pos = [65, 70, 75, 80, 85]
-    plt.yticks(y_tick_pos, ['{}%'.format(i) for i in y_tick_pos])
+        plt.title('Evolution of Crystalization Model Quality', fontsize=fontsize)
+        plt.legend(['Algorithm', 'Human', 'Random'], fontsize=fontsize, loc=2)
+        plt.xlim([-1, 101])
 
-    plt.xlabel('Number of Experiments', fontsize=fontsize)
-    plt.ylabel('Prediction Accuracy - %', fontsize=fontsize)
+        if method_name == 'Adaboost':
+            plt.ylim([60, 85])
+            y_tick_pos = [60, 65, 70, 75, 80, 85]
+        else:
+            plt.ylim([65, 85])
+            y_tick_pos = [65, 70, 75, 80, 85]
+        plt.yticks(y_tick_pos, ['{}%'.format(i) for i in y_tick_pos])
 
-    #
-    import filetools
-    PLOT_FOLDER = os.path.join(HERE_PATH, 'plot')
-    filetools.ensure_dir(PLOT_FOLDER)
+        plt.xlabel('Number of Experiments', fontsize=fontsize)
+        plt.ylabel('Prediction Accuracy - %', fontsize=fontsize)
 
-    plot_filename = os.path.join(PLOT_FOLDER, 'learning_curve_unbiased')
-    save_and_close_figure(fig, plot_filename)
+        #
+        PLOT_FOLDER = os.path.join(HERE_PATH, 'plot')
+        filetools.ensure_dir(PLOT_FOLDER)
+
+        plot_filename = os.path.join(PLOT_FOLDER, 'learning_curve_unbiased_{}'.format(method_name))
+        save_and_close_figure(fig, plot_filename)
