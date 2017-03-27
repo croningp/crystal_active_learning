@@ -67,7 +67,7 @@ if __name__ == '__main__':
 
     plt.ylim([-0.01, 0.2])
     legend = plt.legend(LEGEND_NAMES, fontsize=fontsize, bbox_to_anchor=(1, 1), loc=2, borderaxespad=0.)
-    plt.xlabel('Radius', fontsize=fontsize)
+    plt.xlabel('Euclidean distance between experimental points', fontsize=fontsize)
     plt.ylabel('Histogram of crystals within radius of each others', fontsize=fontsize)
 
     plot_filename = os.path.join(PLOT_FOLDER, 'hist_dist_beween_crystals')
