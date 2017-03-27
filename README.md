@@ -12,3 +12,8 @@ Vasilios Duros+, Jonathan Grizou+, Weimin Xuan, Zied Hosni, De-Liang Long, Haral
 - [real_experiments](real_experiments) holds the data from the real experiments
 - [simulation](simulation) folder contains the simulation script used to generate the results in the SI
 - [utils](utils) folder includes the various mathematical and procedural tools
+
+
+### License
+
+The code is provided under GNU GPL v3 license. For more information read the [LICENSE.md](LICENSE.md) file.
