@@ -134,11 +134,6 @@ def save_pickle(filename, data):
 
 if __name__ == '__main__':
 
-    # setting a seed for reproducibility
-    seed = 0
-    random.seed(seed)
-    np.random.seed(seed)
-
     #
     from analysis.tools import FILENAMES
     from analysis.tools import get_all_data
@@ -151,6 +146,11 @@ if __name__ == '__main__':
     for method_name, method in CLF_METHODS.items():
         print '### {}'.format(method_name)
 
+        # setting a seed for reproducibility
+        seed = 0
+        random.seed(seed)
+        np.random.seed(seed)
+
         all_learning_info[method_name] = {}
 
         clf = train_classifier_method(X_test, y_test, method)
@@ -160,6 +160,13 @@ if __name__ == '__main__':
 
         RESULTS = {}
         for xp_name, filename in FILENAMES.items():
+            # setting a seed for reproducibility
+            # this one here is to ensure the very fisrt classifier for each run is exactly the same
+            seed = 0
+            random.seed(seed)
+            np.random.seed(seed)
+
+            #
             test_range, scores, confusions = compute_learning_curve(filename, (X_test, y_test), method_blank_clf)
             class_acc = class_accuracy_through_time(confusions)
 
