@@ -57,7 +57,7 @@ if __name__ == '__main__':
         plt.plot(TEST_RANGE, AVG_RESULTS['HUMAN'], 'g', linestyle='-', linewidth=linewidth, marker='s', markersize=markersize)
         plt.plot(TEST_RANGE, AVG_RESULTS['RANDOM'], 'b', linestyle='-', linewidth=linewidth, marker='D', markersize=markersize)
 
-        plt.title('Evolution of Crystalization Model Quality', fontsize=fontsize)
+        plt.title('Evolution of Crystallization Model Quality', fontsize=fontsize)
         plt.legend(['Algorithm', 'Human', 'Random'], fontsize=fontsize, loc=2)
         plt.xlim([-1, 101])
 

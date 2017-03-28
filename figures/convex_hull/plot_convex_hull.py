@@ -81,12 +81,12 @@ if __name__ == '__main__':
     plt.plot(TEST_RANGE, AVG_RESULTS['HUMAN'], 'g', linestyle='-', linewidth=linewidth, marker='s', markersize=markersize)
     plt.plot(TEST_RANGE, AVG_RESULTS['RANDOM'], 'b', linestyle='-', linewidth=linewidth, marker='D', markersize=markersize)
 
-    plt.title('Exploration of Crystalization Space', fontsize=fontsize)
+    plt.title('Exploration of Crystallization Space', fontsize=fontsize)
     plt.legend(['Algorithm', 'Human', 'Random'], fontsize=fontsize, loc=2)
     plt.xlim([-1, 101])
 
     plt.xlabel('Number of Experiments', fontsize=fontsize)
-    plt.ylabel('Explored Crystalization Space - AU', fontsize=fontsize)
+    plt.ylabel('Explored Crystallization Space - AU', fontsize=fontsize)
 
     plt.ticklabel_format(style='sci', axis='y', scilimits=(0,0))
 
