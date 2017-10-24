@@ -13,10 +13,18 @@ Vasilios Duros+, Jonathan Grizou+, Weimin Xuan, Zied Hosni, De-Liang Long, Haral
 
 To be cited as: 
 
-- Angew. Chem. Int. Ed. 10.1002/anie.201705721
-- Angew. Chem. 10.1002/ange.201705721
+- V. Duros, J. Grizou, W. Xuan, Z. Hosni, D.-L. Long, H. N. Miras, L. Cronin, Angew. Chem. Int. Ed. 2017, 56, 10815-10820
 
-Link to VoR:
+DOI: 10.1002/anie.201705721
+
+&
+
+- V. Duros, J. Grizou, W. Xuan, Z. Hosni, D.-L. Long, H. N. Miras, L. Cronin, Angew. Chem. 2017, 129, 10955-10960
+
+DOI: 10.1002/ange.201705721
+
+
+Respective links to VoR:
 
 - http://dx.doi.org/10.1002/anie.201705721
 - http://dx.doi.org/10.1002/ange.201705721
